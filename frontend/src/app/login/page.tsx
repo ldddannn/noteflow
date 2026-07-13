@@ -1,16 +1,25 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 import api from "@/lib/api";
 import { setToken, setUser } from "@/lib/auth";
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (searchParams.get("registered") === "1") {
+      setSuccess("注册成功，请登录");
+    }
+  }, [searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,6 +44,11 @@ export default function LoginPage() {
         <h1 className="mb-6 text-center text-2xl font-bold text-gray-800">
           NoteFlow 登录
         </h1>
+        {success && (
+          <div className="mb-4 rounded bg-green-50 p-3 text-sm text-green-600">
+            {success}
+          </div>
+        )}
         {error && (
           <div className="mb-4 rounded bg-red-50 p-3 text-sm text-red-600">
             {error}
@@ -83,5 +97,13 @@ export default function LoginPage() {
         </p>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="flex min-h-screen items-center justify-center text-gray-400">加载中...</div>}>
+      <LoginForm />
+    </Suspense>
   );
 }
