@@ -2,13 +2,14 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { getUser, removeToken } from "@/lib/auth";
+import { removeToken } from "@/lib/auth";
+import { useAuth } from "@/hooks/useAuth";
 import api from "@/lib/api";
 import type { Todo } from "@/types/todo";
 
 export default function TodosPage() {
   const router = useRouter();
-  const user = getUser();
+  const user = useAuth();
   const [todos, setTodos] = useState<Todo[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<"all" | "pending" | "done">("all");

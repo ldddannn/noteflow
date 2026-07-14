@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { getUser, removeToken } from "@/lib/auth";
+import { removeToken } from "@/lib/auth";
+import { useAuth } from "@/hooks/useAuth";
 import api from "@/lib/api";
 import type { Note } from "@/types/note";
 
@@ -11,7 +12,7 @@ type Mode = "view" | "edit" | "new";
 export default function NoteDetailPage() {
   const { id } = useParams();
   const router = useRouter();
-  const user = getUser();
+  const user = useAuth();
   const isNew = id === "new";
 
   const [note, setNote] = useState<Note | null>(null);

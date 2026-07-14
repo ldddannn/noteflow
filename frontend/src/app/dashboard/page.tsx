@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { getUser, removeToken } from "@/lib/auth";
+import { removeToken } from "@/lib/auth";
+import { useAuth } from "@/hooks/useAuth";
 import api from "@/lib/api";
 
 interface Stats {
@@ -13,7 +14,7 @@ interface Stats {
 
 export default function DashboardPage() {
   const router = useRouter();
-  const user = getUser();
+  const user = useAuth();
   const [stats, setStats] = useState<Stats | null>(null);
 
   useEffect(() => {

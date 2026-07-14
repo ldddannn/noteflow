@@ -2,12 +2,13 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { getUser, removeToken } from "@/lib/auth";
+import { removeToken } from "@/lib/auth";
+import { useAuth } from "@/hooks/useAuth";
 import api from "@/lib/api";
 
 export default function ProfilePage() {
   const router = useRouter();
-  const user = getUser();
+  const user = useAuth();
   const [nickname, setNickname] = useState(user?.username || "");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
