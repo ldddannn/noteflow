@@ -13,9 +13,8 @@ def register_blueprints(app):
     from .todos import todos_bp
     app.register_blueprint(todos_bp, url_prefix="/api/todos")
 
-    # 后续模块开发时取消注释
-    # from .stats import stats_bp
-    # app.register_blueprint(stats_bp, url_prefix="/api/stats")
+    from .stats import stats_bp
+    app.register_blueprint(stats_bp, url_prefix="/api/stats")
 
     @app.route("/api/health")
     def health():
