@@ -10,10 +10,11 @@ def register_blueprints(app):
     from .notes import notes_bp
     app.register_blueprint(notes_bp, url_prefix="/api/notes")
 
+    from .todos import todos_bp
+    app.register_blueprint(todos_bp, url_prefix="/api/todos")
+
     # 后续模块开发时取消注释
-    # from .todos import todos_bp
     # from .stats import stats_bp
-    # app.register_blueprint(todos_bp, url_prefix="/api/todos")
     # app.register_blueprint(stats_bp, url_prefix="/api/stats")
 
     @app.route("/api/health")

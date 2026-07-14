@@ -19,7 +19,7 @@ class User(db.Model):
 
     # 关系
     notes = db.relationship("Note", backref="author", lazy="dynamic", cascade="all, delete-orphan")
-    # todos = db.relationship("Todo", backref="author", lazy="dynamic", cascade="all, delete-orphan")  # 待 Todo 模型创建后取消注释
+    todos = db.relationship("Todo", backref="author", lazy="dynamic", cascade="all, delete-orphan")
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
