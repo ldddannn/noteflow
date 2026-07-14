@@ -7,11 +7,12 @@ def register_blueprints(app):
 
     app.register_blueprint(auth_bp, url_prefix="/api/auth")
 
+    from .notes import notes_bp
+    app.register_blueprint(notes_bp, url_prefix="/api/notes")
+
     # 后续模块开发时取消注释
-    # from .notes import notes_bp
     # from .todos import todos_bp
     # from .stats import stats_bp
-    # app.register_blueprint(notes_bp, url_prefix="/api/notes")
     # app.register_blueprint(todos_bp, url_prefix="/api/todos")
     # app.register_blueprint(stats_bp, url_prefix="/api/stats")
 

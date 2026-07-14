@@ -17,9 +17,9 @@ class User(db.Model):
         onupdate=lambda: datetime.now(timezone.utc),
     )
 
-    # 关系 — 待 Note / Todo 模型创建后取消注释
-    # notes = db.relationship("Note", backref="author", lazy="dynamic", cascade="all, delete-orphan")
-    # todos = db.relationship("Todo", backref="author", lazy="dynamic", cascade="all, delete-orphan")
+    # 关系
+    notes = db.relationship("Note", backref="author", lazy="dynamic", cascade="all, delete-orphan")
+    # todos = db.relationship("Todo", backref="author", lazy="dynamic", cascade="all, delete-orphan")  # 待 Todo 模型创建后取消注释
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)

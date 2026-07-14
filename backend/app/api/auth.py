@@ -10,7 +10,7 @@ from app.schemas.auth import (
     UpdateProfileSchema,
     UpdatePasswordSchema,
 )
-from app.utils.response import success, error
+from app.utils.response import success, error, format_validation_errors
 
 auth_bp = Blueprint("auth", __name__)
 
@@ -21,7 +21,7 @@ def register():
     try:
         data = RegisterSchema().load(request.get_json() or {})
     except ValidationError as e:
-        return error(e.messages, 400)
+        return error(format_validation_errors(e.messages), 400)
 
     # 检查用户名是否已存在
     if User.query.filter_by(username=data["username"]).first():
@@ -45,7 +45,7 @@ def login():
     try:
         data = LoginSchema().load(request.get_json() or {})
     except ValidationError as e:
-        return error(e.messages, 400)
+        return error(format_validation_errors(e.messages), 400)
 
     user = User.query.filter_by(username=data["username"]).first()
     if not user or not user.check_password(data["password"]):
@@ -86,7 +86,7 @@ def update_profile():
     try:
         data = UpdateProfileSchema().load(request.get_json() or {})
     except ValidationError as e:
-        return error(e.messages, 400)
+        return error(format_validation_errors(e.messages), 400)
 
     if "username" in data and data["username"] != user.username:
         if User.query.filter_by(username=data["username"]).first():
@@ -109,7 +109,7 @@ def update_password():
     try:
         data = UpdatePasswordSchema().load(request.get_json() or {})
     except ValidationError as e:
-        return error(e.messages, 400)
+        return error(format_validation_errors(e.messages), 400)
 
     if not user.check_password(data["old_password"]):
         return error("原密码错误", 400)
