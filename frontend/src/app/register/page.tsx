@@ -6,6 +6,7 @@ import api from "@/lib/api";
 
 export default function RegisterPage() {
   const router = useRouter();
+  const [account, setAccount] = useState("");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -23,7 +24,7 @@ export default function RegisterPage() {
 
     setLoading(true);
     try {
-      await api.post("/api/auth/register", { username, email, password });
+      await api.post("/api/auth/register", { account, username, email, password });
       router.push("/login?registered=1");
     } catch (err: any) {
       setError(err.response?.data?.message || "注册失败，请重试");
@@ -46,6 +47,19 @@ export default function RegisterPage() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="mb-1 block text-sm font-medium text-gray-600">
+              账号
+            </label>
+            <input
+              type="text"
+              value={account}
+              onChange={(e) => setAccount(e.target.value)}
+              className="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
+              placeholder="登录时使用，注册后不可修改"
+              required
+            />
+          </div>
+          <div>
+            <label className="mb-1 block text-sm font-medium text-gray-600">
               用户名
             </label>
             <input
@@ -53,7 +67,7 @@ export default function RegisterPage() {
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               className="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
-              placeholder="请输入用户名"
+              placeholder="显示名称，可随时修改"
               required
             />
           </div>

@@ -23,15 +23,19 @@ def register():
     except ValidationError as e:
         return error(format_validation_errors(e.messages), 400)
 
-    # 检查用户名是否已存在
-    if User.query.filter_by(username=data["username"]).first():
-        return error("用户名已存在", 409)
+    # 检查账号是否已存在
+    if User.query.filter_by(account=data["account"]).first():
+        return error("账号已存在", 409)
 
     # 检查邮箱是否已存在
     if User.query.filter_by(email=data["email"]).first():
         return error("邮箱已被注册", 409)
 
-    user = User(username=data["username"], email=data["email"])
+    user = User(
+        account=data["account"],
+        username=data["username"],
+        email=data["email"],
+    )
     user.set_password(data["password"])
     db.session.add(user)
     db.session.commit()
@@ -47,9 +51,9 @@ def login():
     except ValidationError as e:
         return error(format_validation_errors(e.messages), 400)
 
-    user = User.query.filter_by(username=data["username"]).first()
+    user = User.query.filter_by(account=data["account"]).first()
     if not user or not user.check_password(data["password"]):
-        return error("用户名或密码错误", 401)
+        return error("账号或密码错误", 401)
 
     access_token = create_access_token(identity=str(user.id))
 
@@ -88,10 +92,10 @@ def update_profile():
     except ValidationError as e:
         return error(format_validation_errors(e.messages), 400)
 
-    if "username" in data and data["username"] != user.username:
-        if User.query.filter_by(username=data["username"]).first():
-            return error("用户名已存在", 409)
+    if "username" in data:
         user.username = data["username"]
+    if "avatar" in data:
+        user.avatar = data["avatar"]
 
     db.session.commit()
     return success(data=user.to_dict(), message="修改成功")

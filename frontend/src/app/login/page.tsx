@@ -9,7 +9,7 @@ import { setToken, setUser } from "@/lib/auth";
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [username, setUsername] = useState("");
+  const [account, setAccount] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -27,7 +27,7 @@ function LoginForm() {
     setLoading(true);
 
     try {
-      const res = await api.post("/api/auth/login", { username, password });
+      const res = await api.post("/api/auth/login", { account, password });
       setToken(res.data.data.access_token);
       setUser(res.data.data.user);
       router.push("/dashboard");
@@ -57,14 +57,14 @@ function LoginForm() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="mb-1 block text-sm font-medium text-gray-600">
-              用户名
+              账号
             </label>
             <input
               type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              value={account}
+              onChange={(e) => setAccount(e.target.value)}
               className="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
-              placeholder="请输入用户名"
+              placeholder="请输入账号"
               required
             />
           </div>

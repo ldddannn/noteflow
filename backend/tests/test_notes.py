@@ -1,10 +1,10 @@
-def _login(client, username="testuser", password="123456"):
+def _login(client, account="testuser", password="123456"):
     """辅助：注册并登录，返回 token"""
     client.post(
         "/api/auth/register",
-        json={"username": username, "email": f"{username}@test.com", "password": password},
+        json={"account": account, "username": account, "email": f"{account}@test.com", "password": password},
     )
-    res = client.post("/api/auth/login", json={"username": username, "password": password})
+    res = client.post("/api/auth/login", json={"account": account, "password": password})
     return res.get_json()["data"]["access_token"]
 
 

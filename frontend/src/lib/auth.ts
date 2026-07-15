@@ -28,13 +28,13 @@ export function removeToken(): void {
   removeCookie(TOKEN_KEY);
 }
 
-export function getUser(): { username: string; email: string } | null {
+export function getUser(): { account: string; username: string; email: string; avatar: string | null } | null {
   if (typeof window === "undefined") return null;
   const raw = localStorage.getItem(USER_KEY);
   return raw ? JSON.parse(raw) : null;
 }
 
-export function setUser(user: { username: string; email: string }): void {
+export function setUser(user: { account: string; username: string; email: string; avatar: string | null }): void {
   localStorage.setItem(USER_KEY, JSON.stringify(user));
 }
 

@@ -2,9 +2,14 @@ from marshmallow import Schema, fields, validate
 
 
 class RegisterSchema(Schema):
-    username = fields.Str(
+    account = fields.Str(
         required=True,
         validate=validate.Length(min=2, max=80),
+        error_messages={"required": "账号不能为空"},
+    )
+    username = fields.Str(
+        required=True,
+        validate=validate.Length(min=1, max=80),
         error_messages={"required": "用户名不能为空"},
     )
     email = fields.Email(
@@ -19,9 +24,9 @@ class RegisterSchema(Schema):
 
 
 class LoginSchema(Schema):
-    username = fields.Str(
+    account = fields.Str(
         required=True,
-        error_messages={"required": "用户名不能为空"},
+        error_messages={"required": "账号不能为空"},
     )
     password = fields.Str(
         required=True,
@@ -30,7 +35,8 @@ class LoginSchema(Schema):
 
 
 class UpdateProfileSchema(Schema):
-    username = fields.Str(validate=validate.Length(min=2, max=80))
+    username = fields.Str(validate=validate.Length(min=1, max=80))
+    avatar = fields.Str(validate=validate.Length(max=500), allow_none=True)
 
 
 class UpdatePasswordSchema(Schema):

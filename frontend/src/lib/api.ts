@@ -22,9 +22,13 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
-      window.location.href = "/login";
+      // 登录/注册页面的 401 是正常业务错误（密码错误等），不跳转
+      const path = window.location.pathname;
+      if (path !== "/login" && path !== "/register") {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        window.location.href = "/login";
+      }
     }
     return Promise.reject(error);
   }
