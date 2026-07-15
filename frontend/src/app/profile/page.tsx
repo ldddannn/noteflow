@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { removeToken, setUser } from "@/lib/auth";
 import { useAuth } from "@/hooks/useAuth";
+import Sidebar from "@/components/layout/Sidebar";
 import api from "@/lib/api";
 
 export default function ProfilePage() {
@@ -14,7 +15,6 @@ export default function ProfilePage() {
   const [profileMsg, setProfileMsg] = useState<{ type: "success" | "error"; text: string } | null>(null);
   const [profileLoading, setProfileLoading] = useState(false);
 
-  // 改密码
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -49,7 +49,6 @@ export default function ProfilePage() {
   const handleUpdatePassword = async (e: React.FormEvent) => {
     e.preventDefault();
     setPwdMsg(null);
-
     if (newPassword.length < 6) {
       setPwdMsg({ type: "error", text: "新密码至少 6 位" });
       return;
@@ -58,7 +57,6 @@ export default function ProfilePage() {
       setPwdMsg({ type: "error", text: "两次密码不一致" });
       return;
     }
-
     setPwdLoading(true);
     try {
       await api.put("/api/auth/password", {
@@ -66,9 +64,6 @@ export default function ProfilePage() {
         new_password: newPassword,
       });
       setPwdMsg({ type: "success", text: "密码修改成功，即将跳转登录页" });
-      setOldPassword("");
-      setNewPassword("");
-      setConfirmPassword("");
       setTimeout(() => {
         removeToken();
         router.push("/login");
@@ -80,168 +75,149 @@ export default function ProfilePage() {
     }
   };
 
-  const handleLogout = () => {
-    removeToken();
-    router.push("/login");
-  };
-
-  // 头像：有 URL 则显示图片，否则显示首字母头像
-  const avatarSrc = user?.avatar || null;
   const initials = user?.username?.charAt(0)?.toUpperCase() || "?";
 
   return (
     <div className="flex min-h-screen">
-      <aside className="flex w-56 flex-col bg-white shadow-md">
-        <div className="border-b px-6 py-4">
-          <h2 className="text-lg font-bold text-blue-600">NoteFlow</h2>
-        </div>
-        <nav className="flex-1 space-y-1 p-4">
-          <a href="/dashboard" className="block rounded px-3 py-2 text-sm text-gray-600 hover:bg-gray-100">📊 仪表盘</a>
-          <a href="/notes" className="block rounded px-3 py-2 text-sm text-gray-600 hover:bg-gray-100">📝 笔记</a>
-          <a href="/todos" className="block rounded px-3 py-2 text-sm text-gray-600 hover:bg-gray-100">✅ 待办</a>
-          <a href="/profile" className="block rounded bg-blue-50 px-3 py-2 text-sm font-medium text-blue-700">👤 个人中心</a>
-        </nav>
-        <div className="border-t p-4">
-          <div className="flex items-center gap-2">
-            {avatarSrc ? (
-              <img src={avatarSrc} alt="" className="h-7 w-7 rounded-full object-cover" />
-            ) : (
-              <span className="flex h-7 w-7 items-center justify-center rounded-full bg-blue-100 text-xs font-bold text-blue-600">
-                {initials}
-              </span>
-            )}
-            <p className="text-sm text-gray-500">{user?.username}</p>
-          </div>
-          <button onClick={handleLogout} className="mt-2 text-sm text-red-500 hover:underline">退出登录</button>
-        </div>
-      </aside>
-      <main className="flex-1 p-8">
-        <h1 className="mb-6 text-3xl font-bold text-gray-800">个人中心</h1>
+      <Sidebar />
+      <main className="flex-1 overflow-auto bg-gray-50 p-8">
+        <div className="mx-auto max-w-2xl space-y-8">
+          {/* 头部卡片 — 头像 + 基本信息 */}
+          <div className="overflow-hidden rounded-2xl bg-white shadow-sm">
+            {/* 背景色块 */}
+            <div className="h-24 bg-gradient-to-r from-blue-500 to-blue-600" />
+            <div className="-mt-10 px-6 pb-6">
+              <div className="flex items-end gap-5">
+                {user?.avatar ? (
+                  <img
+                    src={user.avatar}
+                    alt=""
+                    className="h-20 w-20 rounded-xl border-4 border-white object-cover shadow-sm"
+                  />
+                ) : (
+                  <span className="flex h-20 w-20 items-center justify-center rounded-xl border-4 border-white bg-gradient-to-br from-blue-400 to-blue-600 text-2xl font-bold text-white shadow-sm">
+                    {initials}
+                  </span>
+                )}
+                <div className="pb-1">
+                  <h2 className="text-xl font-bold text-gray-800">{user?.username}</h2>
+                  <p className="text-sm text-gray-500">@{user?.account}</p>
+                </div>
+              </div>
 
-        <div className="max-w-md space-y-6">
-          {/* 头像 + 账号信息 */}
-          <div className="rounded-lg bg-white p-6 shadow">
-            <div className="mb-4 flex items-center gap-4">
-              {avatarSrc ? (
-                <img src={avatarSrc} alt="" className="h-16 w-16 rounded-full object-cover" />
-              ) : (
-                <span className="flex h-16 w-16 items-center justify-center rounded-full bg-blue-100 text-2xl font-bold text-blue-600">
-                  {initials}
-                </span>
-              )}
-              <div>
-                <p className="text-lg font-semibold text-gray-800">{user?.username}</p>
-                <p className="text-sm text-gray-400">@{user?.account}</p>
+              {/* 只读信息网格 */}
+              <div className="mt-6 grid grid-cols-2 gap-4">
+                <div className="rounded-xl bg-gray-50 px-4 py-3">
+                  <p className="text-xs text-gray-400">账号</p>
+                  <p className="mt-0.5 text-sm font-medium text-gray-700">{user?.account}</p>
+                  <p className="mt-0.5 text-xs text-gray-300">注册后不可修改</p>
+                </div>
+                <div className="rounded-xl bg-gray-50 px-4 py-3">
+                  <p className="text-xs text-gray-400">邮箱</p>
+                  <p className="mt-0.5 truncate text-sm font-medium text-gray-700">{user?.email}</p>
+                </div>
               </div>
             </div>
-
-            {/* 账号（只读） */}
-            <div className="mb-4">
-              <label className="mb-1 block text-sm font-medium text-gray-600">账号</label>
-              <input
-                type="text"
-                value={user?.account || ""}
-                disabled
-                className="w-full rounded border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-400 cursor-not-allowed"
-              />
-              <p className="mt-1 text-xs text-gray-400">账号注册后不可修改</p>
-            </div>
-
-            {/* 邮箱（只读） */}
-            <div className="mb-4">
-              <label className="mb-1 block text-sm font-medium text-gray-600">邮箱</label>
-              <input
-                type="text"
-                value={user?.email || ""}
-                disabled
-                className="w-full rounded border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-400 cursor-not-allowed"
-              />
-            </div>
           </div>
 
-          {/* 修改个人资料 */}
-          <div className="rounded-lg bg-white p-6 shadow">
-            <h2 className="mb-4 text-lg font-semibold text-gray-700">修改资料</h2>
+          {/* 编辑资料 */}
+          <div className="rounded-2xl bg-white p-6 shadow-sm">
+            <h3 className="mb-5 flex items-center gap-2 text-base font-semibold text-gray-700">
+              <svg className="h-4 w-4 text-blue-500" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+              </svg>
+              编辑资料
+            </h3>
             {profileMsg && (
-              <div className={`mb-4 rounded p-3 text-sm ${profileMsg.type === "success" ? "bg-green-50 text-green-600" : "bg-red-50 text-red-600"}`}>
+              <div className={`mb-4 rounded-xl px-4 py-2.5 text-sm ${profileMsg.type === "success" ? "bg-green-50 text-green-600" : "bg-red-50 text-red-600"}`}>
                 {profileMsg.text}
               </div>
             )}
             <form onSubmit={handleUpdateProfile} className="space-y-4">
               <div>
-                <label className="mb-1 block text-sm font-medium text-gray-600">用户名</label>
+                <label className="mb-1.5 block text-sm font-medium text-gray-600">用户名</label>
                 <input
                   type="text"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  className="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
+                  className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm transition-colors focus:border-blue-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-100"
                   required
                 />
               </div>
               <div>
-                <label className="mb-1 block text-sm font-medium text-gray-600">头像 URL</label>
+                <label className="mb-1.5 block text-sm font-medium text-gray-600">头像 URL</label>
                 <input
                   type="url"
                   value={avatarUrl}
                   onChange={(e) => setAvatarUrl(e.target.value)}
-                  className="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
-                  placeholder="https://example.com/avatar.png（可选）"
+                  className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm transition-colors focus:border-blue-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-100"
+                  placeholder="https://example.com/avatar.png"
                 />
+                <p className="mt-1 text-xs text-gray-400">粘贴图片链接作为头像，留空则显示首字母</p>
               </div>
               <button
                 type="submit"
                 disabled={profileLoading}
-                className="w-full rounded bg-blue-600 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+                className="w-full rounded-xl bg-blue-600 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
               >
-                {profileLoading ? "保存中..." : "保存"}
+                {profileLoading ? "保存中..." : "保存修改"}
               </button>
             </form>
           </div>
 
           {/* 修改密码 */}
-          <div className="rounded-lg bg-white p-6 shadow">
-            <h2 className="mb-4 text-lg font-semibold text-gray-700">修改密码</h2>
+          <div className="rounded-2xl bg-white p-6 shadow-sm">
+            <h3 className="mb-5 flex items-center gap-2 text-base font-semibold text-gray-700">
+              <svg className="h-4 w-4 text-blue-500" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+              </svg>
+              修改密码
+            </h3>
             {pwdMsg && (
-              <div className={`mb-4 rounded p-3 text-sm ${pwdMsg.type === "success" ? "bg-green-50 text-green-600" : "bg-red-50 text-red-600"}`}>
+              <div className={`mb-4 rounded-xl px-4 py-2.5 text-sm ${pwdMsg.type === "success" ? "bg-green-50 text-green-600" : "bg-red-50 text-red-600"}`}>
                 {pwdMsg.text}
               </div>
             )}
             <form onSubmit={handleUpdatePassword} className="space-y-4">
               <div>
-                <label className="mb-1 block text-sm font-medium text-gray-600">原密码</label>
+                <label className="mb-1.5 block text-sm font-medium text-gray-600">原密码</label>
                 <input
                   type="password"
                   value={oldPassword}
                   onChange={(e) => setOldPassword(e.target.value)}
-                  className="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
+                  className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm transition-colors focus:border-blue-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-100"
                   required
                 />
               </div>
-              <div>
-                <label className="mb-1 block text-sm font-medium text-gray-600">新密码</label>
-                <input
-                  type="password"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  className="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
-                  placeholder="至少 6 位"
-                  required
-                />
-              </div>
-              <div>
-                <label className="mb-1 block text-sm font-medium text-gray-600">确认新密码</label>
-                <input
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
-                  required
-                />
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="mb-1.5 block text-sm font-medium text-gray-600">新密码</label>
+                  <input
+                    type="password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm transition-colors focus:border-blue-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-100"
+                    placeholder="至少 6 位"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="mb-1.5 block text-sm font-medium text-gray-600">确认新密码</label>
+                  <input
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm transition-colors focus:border-blue-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-100"
+                    required
+                  />
+                </div>
               </div>
               <button
                 type="submit"
                 disabled={pwdLoading}
-                className="w-full rounded bg-blue-600 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+                className="w-full rounded-xl bg-gray-800 py-2.5 text-sm font-medium text-white transition-colors hover:bg-gray-900 disabled:opacity-50"
               >
                 {pwdLoading ? "保存中..." : "修改密码"}
               </button>

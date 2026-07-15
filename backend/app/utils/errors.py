@@ -5,6 +5,10 @@ from .response import error
 def register_error_handlers(app):
     """注册全局错误处理器"""
 
+    @app.errorhandler(403)
+    def forbidden(e):
+        return error("无权访问", 403)
+
     @app.errorhandler(400)
     def bad_request(e):
         return error("请求参数有误", 400)

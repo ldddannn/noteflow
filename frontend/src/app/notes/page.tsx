@@ -1,15 +1,12 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { useRouter } from "next/navigation";
-import { removeToken } from "@/lib/auth";
-import { useAuth } from "@/hooks/useAuth";
+import Sidebar from "@/components/layout/Sidebar";
+import { NoteCardSkeleton } from "@/components/ui/Skeleton";
 import api from "@/lib/api";
 import type { Note } from "@/types/note";
 
 export default function NotesPage() {
-  const router = useRouter();
-  const user = useAuth();
   const [notes, setNotes] = useState<Note[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -35,41 +32,9 @@ export default function NotesPage() {
     }
   };
 
-  const handleLogout = () => {
-    removeToken();
-    router.push("/login");
-  };
-
   return (
     <div className="flex min-h-screen">
-      <aside className="flex w-56 flex-col bg-white shadow-md">
-        <div className="border-b px-6 py-4">
-          <h2 className="text-lg font-bold text-blue-600">NoteFlow</h2>
-        </div>
-        <nav className="flex-1 space-y-1 p-4">
-          <a href="/dashboard" className="block rounded px-3 py-2 text-sm text-gray-600 hover:bg-gray-100">
-            📊 仪表盘
-          </a>
-          <a
-            href="/notes"
-            className="block rounded bg-blue-50 px-3 py-2 text-sm font-medium text-blue-700"
-          >
-            📝 笔记
-          </a>
-          <a href="/todos" className="block rounded px-3 py-2 text-sm text-gray-600 hover:bg-gray-100">
-            ✅ 待办
-          </a>
-          <a href="/profile" className="block rounded px-3 py-2 text-sm text-gray-600 hover:bg-gray-100">
-            👤 个人中心
-          </a>
-        </nav>
-        <div className="border-t p-4">
-          <p className="text-sm text-gray-500">{user?.username}</p>
-          <button onClick={handleLogout} className="mt-2 text-sm text-red-500 hover:underline">
-            退出登录
-          </button>
-        </div>
-      </aside>
+      <Sidebar />
       <main className="flex-1 p-8">
         <div className="mb-6 flex items-center justify-between">
           <h1 className="text-3xl font-bold text-gray-800">笔记</h1>
@@ -81,17 +46,23 @@ export default function NotesPage() {
           </a>
         </div>
         {loading ? (
-          <p className="text-gray-400">加载中...</p>
+          <div className="space-y-4">
+            <NoteCardSkeleton />
+            <NoteCardSkeleton />
+            <NoteCardSkeleton />
+          </div>
         ) : notes.length === 0 ? (
-          <div className="rounded-lg bg-white p-12 text-center shadow">
-            <p className="text-gray-400">还没有笔记，点击上方按钮创建第一篇</p>
+          <div className="rounded-xl bg-white p-12 text-center shadow-sm">
+            <p className="text-5xl">📝</p>
+            <p className="mt-3 text-gray-400">还没有笔记</p>
+            <p className="text-sm text-gray-300">点击上方按钮创建第一篇</p>
           </div>
         ) : (
           <div className="space-y-4">
             {notes.map((note) => (
               <div
                 key={note.id}
-                className="flex items-center justify-between rounded-lg bg-white p-4 shadow hover:shadow-md transition-shadow"
+                className="flex items-center justify-between rounded-xl bg-white p-4 shadow-sm hover:shadow-md transition-shadow"
               >
                 <div className="min-w-0 flex-1">
                   <a
