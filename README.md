@@ -1,17 +1,18 @@
 # NoteFlow — 个人笔记与待办管理系统
 
-> **线上 Demo**：（部署后填写）  
-> **AI 辅助编程实训项目** | Next.js 14 + Flask | 个人独立完成
+> **AI 辅助编程实训项目** | Next.js 16 + Flask 3 | 个人独立完成
 
 ---
 
 ## 项目介绍
 
-NoteFlow 是一个个人笔记与待办管理系统，支持用户注册登录、笔记增删改查、待办事项管理和仪表盘统计。
+NoteFlow 是一个个人笔记与待办管理系统，支持：
 
-### 功能截图
-
-（部署后补充截图到 `docs/screenshots/app/`）
+- 用户注册 / 登录（JWT 鉴权）
+- 笔记增删改查（标题、内容、标签）
+- 待办事项管理（状态切换、过滤、双击编辑）
+- 仪表盘统计（笔记数、待办数、最近笔记）
+- 个人中心（修改用户名、头像、密码）
 
 ---
 
@@ -19,9 +20,10 @@ NoteFlow 是一个个人笔记与待办管理系统，支持用户注册登录�
 
 | 层级 | 技术 |
 |------|------|
-| 前端 | Next.js 14 (App Router) + TypeScript + Tailwind CSS |
-| 后端 | Flask 3 + SQLAlchemy + JWT |
-| 数据库 | SQLite（本地）/ PostgreSQL（线上） |
+| 前端 | Next.js 16 (App Router) + TypeScript + Tailwind CSS 4 |
+| 后端 | Flask 3 + SQLAlchemy + Flask-JWT-Extended + Marshmallow |
+| 数据库 | SQLite（本地）/ PostgreSQL（Render） |
+| 测试 | PyTest（42 个测试用例） |
 | 部署 | Vercel（前端）+ Render（后端） |
 
 ---
@@ -36,7 +38,7 @@ NoteFlow 是一个个人笔记与待办管理系统，支持用户注册登录�
 ### 1. 克隆项目
 
 ```bash
-git clone https://github.com/你的用户名/noteflow.git
+git clone https://gitee.com/liu-danD/noteflow.git
 cd noteflow
 ```
 
@@ -45,36 +47,75 @@ cd noteflow
 ```bash
 conda activate noteflow
 cd backend
-cp .env.example .env        # 修改 .env 中的密钥
 python run.py               # 启动在 http://localhost:5000
 ```
+
+首次运行会自动创建 SQLite 数据库和表。
 
 ### 3. 启动前端
 
 ```bash
 cd frontend
-cp .env.local.example .env.local
 npm install
 npm run dev                 # 启动在 http://localhost:3000
+```
+
+### 4. 运行测试
+
+```bash
+conda activate noteflow
+python -m pytest backend/tests/ -v   # 42 个测试
 ```
 
 ---
 
 ## API 文档
 
-详见 [`docs/api.md`](./docs/api.md) 或导入 Postman Collection `docs/noteflow.postman_collection.json`。
+### 认证模块 `/api/auth`
 
-### 主要接口
-
-| 模块 | 方法 | 路径 | 说明 |
+| 方法 | 路径 | 鉴权 | 说明 |
 |------|------|------|------|
-| 认证 | POST | `/api/auth/register` | 注册 |
-| 认证 | POST | `/api/auth/login` | 登录 |
-| 笔记 | GET/POST | `/api/notes` | 列表/创建 |
-| 笔记 | GET/PUT/DELETE | `/api/notes/<id>` | 详情/更新/删除 |
-| 待办 | GET/POST | `/api/todos` | 列表/创建 |
-| 待办 | PUT/DELETE | `/api/todos/<id>` | 更新/删除 |
-| 统计 | GET | `/api/stats/dashboard` | 仪表盘统计 |
+| POST | `/api/auth/register` | 公开 | 注册（account/username/email/password） |
+| POST | `/api/auth/login` | 公开 | 登录，返回 access_token |
+| GET | `/api/auth/me` | JWT | 获取当前用户信息 |
+| PUT | `/api/auth/profile` | JWT | 修改用户名/头像 |
+| PUT | `/api/auth/password` | JWT | 修改密码 |
+
+### 笔记模块 `/api/notes`
+
+| 方法 | 路径 | 鉴权 | 说明 |
+|------|------|------|------|
+| GET | `/api/notes` | JWT | 笔记列表 |
+| POST | `/api/notes` | JWT | 创建笔记 |
+| GET | `/api/notes/<id>` | JWT | 笔记详情 |
+| PUT | `/api/notes/<id>` | JWT | 更新笔记 |
+| DELETE | `/api/notes/<id>` | JWT | 删除笔记 |
+
+### 待办模块 `/api/todos`
+
+| 方法 | 路径 | 鉴权 | 说明 |
+|------|------|------|------|
+| GET | `/api/todos?status=pending\|done` | JWT | 待办列表（支持状态过滤） |
+| POST | `/api/todos` | JWT | 创建待办 |
+| GET | `/api/todos/<id>` | JWT | 待办详情 |
+| PUT | `/api/todos/<id>` | JWT | 更新待办（标题/状态） |
+| DELETE | `/api/todos/<id>` | JWT | 删除待办 |
+
+### 统计模块 `/api/stats`
+
+| 方法 | 路径 | 鉴权 | 说明 |
+|------|------|------|------|
+| GET | `/api/stats/dashboard` | JWT | 笔记总数/待办总数/已完成数 |
+
+### 统一响应格式
+
+```json
+{
+  "code": 200,
+  "message": "success",
+  "data": { }
+}
+```
 
 ---
 
@@ -82,21 +123,42 @@ npm run dev                 # 启动在 http://localhost:3000
 
 ```
 noteflow/
-├── backend/          # Flask 后端
+├── backend/
 │   ├── app/
-│   │   ├── api/      # 路由蓝图
-│   │   ├── models/   # 数据库模型
-│   │   ├── schemas/  # 请求校验
-│   │   └── utils/    # 工具函数
-│   └── tests/        # PyTest 测试
-├── frontend/         # Next.js 前端
+│   │   ├── api/           # 蓝图路由
+│   │   │   ├── auth.py    # /api/auth/*
+│   │   │   ├── notes.py   # /api/notes/*
+│   │   │   ├── todos.py   # /api/todos/*
+│   │   │   └── stats.py   # /api/stats/*
+│   │   ├── models/        # 数据库模型
+│   │   ├── schemas/       # Marshmallow 校验
+│   │   └── utils/         # 工具函数
+│   ├── tests/             # PyTest（42 用例）
+│   └── requirements.txt
+├── frontend/
 │   └── src/
-│       ├── app/      # 页面路由（App Router）
-│       ├── components/
-│       ├── lib/      # API 封装 & 工具
-│       └── types/    # TypeScript 类型
-└── docs/             # 文档 & 截图
+│       ├── app/           # App Router 页面（7 路由）
+│       ├── components/    # 可复用组件
+│       ├── lib/           # Axios 封装 & 工具
+│       ├── hooks/         # 自定义 Hooks
+│       └── types/         # TypeScript 类型
+└── docs/
+    └── code-review-report.md
 ```
+
+---
+
+## 前端路由
+
+| 路由 | 页面 | 鉴权 |
+|------|------|------|
+| `/login` | 登录 | 公开 |
+| `/register` | 注册 | 公开 |
+| `/dashboard` | 仪表盘 | 需登录 |
+| `/notes` | 笔记列表 | 需登录 |
+| `/notes/[id]` | 笔记详情/编辑 | 需登录 |
+| `/todos` | 待办列表 | 需登录 |
+| `/profile` | 个人中心 | 需登录 |
 
 ---
 
@@ -104,21 +166,20 @@ noteflow/
 
 | 场景 | 处理方式 |
 |------|----------|
-| 未登录访问受保护路由 | 重定向登录页 |
-| Token 过期 | 401 拦截 → 清除登录态 |
-| 表单校验失败 | 前端即时提示 + 后端二次校验 |
-| 删除操作 | 二次确认弹窗 |
-| 网络错误 | 友好错误提示 |
-| 后端异常 | 统一 JSON 错误响应 |
+| 未登录访问受保护路由 | proxy.ts 拦截 → 重定向 `/login` |
+| Token 过期 | Axios 401 拦截器 → 清除登录态 → 跳转登录页 |
+| 表单校验失败 | 前端即时提示 + 后端 Marshmallow 双重校验 |
+| 删除操作 | `confirm()` 二次确认 |
+| 修改密码成功 | 自动退出 → 跳转登录页重新登录 |
+| 后端异常 | 全局错误处理器 → 统一 JSON 错误响应 |
+| 404 页面 | Next.js `not-found.tsx` 友好页面 |
 
 ---
 
 ## 注意事项
 
-- Render 免费实例 15 分钟无请求会休眠，首次访问可能需要 30–60 秒唤醒
+- Render 免费实例 15 分钟无请求会休眠，首次访问可能需 30–60 秒唤醒
 - 本地开发使用 SQLite，无需额外安装数据库
-- 生产环境请修改 `.env` 中的 `SECRET_KEY` 和 `JWT_SECRET_KEY`
+- 生产环境请修改 `SECRET_KEY` 和 `JWT_SECRET_KEY`
 
 ---
-
-*项目完成日期：2026-07-XX*
