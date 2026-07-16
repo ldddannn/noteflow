@@ -18,7 +18,8 @@ class DevelopmentConfig(Config):
 class ProductionConfig(Config):
     """生产环境"""
     DEBUG = False
-    SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL")
+    _db_url = os.getenv("DATABASE_URL", "")
+    SQLALCHEMY_DATABASE_URI = _db_url.replace("mysql://", "mysql+pymysql://") if _db_url else None
     SQLALCHEMY_ENGINE_OPTIONS = {
         "pool_recycle": 300,
         "pool_pre_ping": True,
