@@ -6,4 +6,7 @@ from flask_cors import CORS
 db = SQLAlchemy()
 migrate = Migrate()
 jwt = JWTManager()
-cors = CORS()
+
+def init_cors(app):
+    origins = app.config.get("CORS_ORIGINS", "http://localhost:3000")
+    CORS(app, resources={r"/api/*": {"origins": origins.split(",")}})

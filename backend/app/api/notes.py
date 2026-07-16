@@ -13,15 +13,23 @@ notes_bp = Blueprint("notes", __name__)
 @notes_bp.route("", methods=["GET"])
 @jwt_required()
 def list_notes():
-    """获取当前用户的笔记列表（按更新时间倒序）"""
+    """获取当前用户的笔记列表（按更新时间倒序，支持分页）"""
     user_id = int(get_jwt_identity())
-    notes = (
-        Note.query
-        .filter_by(user_id=user_id)
-        .order_by(Note.updated_at.desc())
-        .all()
-    )
-    return success(data=[n.to_dict() for n in notes])
+    
+    page = int(request.args.get("page", 1))
+    size = int(request.args.get("size", 10))
+    
+    query = Note.query.filter_by(user_id=user_id).order_by(Note.updated_at.desc())
+    total = query.count()
+    notes = query.offset((page - 1) * size).limit(size).all()
+    
+    return success(data={
+        "items": [n.to_dict() for n in notes],
+        "total": total,
+        "page": page,
+        "size": size,
+        "pages": (total + size - 1) // size,
+    })
 
 
 @notes_bp.route("", methods=["POST"])

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { removeToken } from "@/lib/auth";
 import { useAuth } from "@/hooks/useAuth";
@@ -36,7 +37,7 @@ export default function Sidebar() {
               ? pathname === "/dashboard"
               : pathname.startsWith(item.href);
           return (
-            <a
+            <Link
               key={item.href}
               href={item.href}
               className={`block rounded px-3 py-2 text-sm transition-colors ${
@@ -46,7 +47,7 @@ export default function Sidebar() {
               }`}
             >
               {item.icon} {item.label}
-            </a>
+            </Link>
           );
         })}
       </nav>

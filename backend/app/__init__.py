@@ -1,7 +1,7 @@
 import os
 from flask import Flask
 from .config import config_map
-from .extensions import db, migrate, jwt, cors
+from .extensions import db, migrate, jwt, init_cors
 from .utils.errors import register_error_handlers
 from .logging_config import setup_logging
 
@@ -18,7 +18,7 @@ def create_app(config_name=None):
     db.init_app(app)
     migrate.init_app(app, db)
     jwt.init_app(app)
-    cors.init_app(app)
+    init_cors(app)
 
     # 注册蓝图
     from .api import register_blueprints
