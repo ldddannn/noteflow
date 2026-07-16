@@ -4,10 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "next build && next export",
     "start": "next start",
-    "lint": "eslint",
-    "build-cf": "next build"
+    "lint": "eslint"
   },
   "dependencies": {
     "axios": "^1.18.1",
