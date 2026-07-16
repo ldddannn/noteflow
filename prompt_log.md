@@ -308,6 +308,185 @@
 
 ---
 
+## Prompt 11：笔记搜索与分页功能
+
+**时间**：2026-07-16  
+**对应文件**：`backend/app/api/notes.py`、`frontend/src/app/notes/page.tsx`
+
+**目标**：实现笔记搜索、标签筛选和分页功能
+
+**Prompt**：
+```
+请帮我实现笔记搜索和分页功能：
+
+后端：
+1. 修改 GET /api/notes 接口，支持以下查询参数：
+   - keyword：关键词搜索（标题或内容）
+   - tag：标签筛选
+   - page：页码（默认1）
+   - size：每页数量（默认10）
+2. 返回格式改为分页格式：{items, total, page, size, pages}
+
+前端：
+1. 在笔记列表页面添加搜索框
+2. 添加常用标签快捷选择按钮
+3. 添加分页组件，支持翻页
+
+使用 Tailwind CSS 4 实现美观的搜索和分页 UI。
+```
+
+**AI 返回要点**：
+- 后端实现了搜索、筛选和分页功能
+- 前端添加了搜索框和标签筛选按钮
+- 添加了分页组件
+
+---
+
+## Prompt 12：待办拖拽排序功能
+
+**时间**：2026-07-16  
+**对应文件**：`backend/app/models/todo.py`、`backend/app/api/todos.py`、`frontend/src/app/todos/page.tsx`
+
+**目标**：实现待办事项拖拽排序
+
+**Prompt**：
+```
+请帮我实现待办事项拖拽排序功能：
+
+后端：
+1. 在 Todo 模型中添加 order 字段（Integer类型，默认0）
+2. 添加 POST /api/todos/reorder 接口，接收排序后的 todo_id 数组
+3. 更新 GET /api/todos 接口，按 order 字段排序
+
+前端：
+1. 使用 HTML5 Drag API 实现待办列表的拖拽排序
+2. 拖拽时显示视觉反馈（高亮放置区域）
+3. 拖拽结束后调用 reorder API 保存排序
+
+使用 Tailwind CSS 4 实现拖拽效果。
+```
+
+**AI 返回要点**：
+- 后端添加了 order 字段和 reorder API
+- 前端实现了拖拽排序功能，带有视觉反馈
+
+---
+
+## Prompt 13：仪表盘可视化增强
+
+**时间**：2026-07-16  
+**对应文件**：`backend/app/api/stats.py`、`frontend/src/app/dashboard/page.tsx`
+
+**目标**：增强仪表盘数据可视化展示
+
+**Prompt**：
+```
+请帮我增强仪表盘功能：
+
+后端：
+1. 修改 GET /api/stats/dashboard 接口，添加：
+   - completion_rate：待办完成率（百分比）
+   - tag_stats：笔记标签统计（标签名和数量）
+
+前端：
+1. 添加待办完成进度条
+2. 添加环形图展示完成率
+3. 添加标签统计图表
+
+使用 Tailwind CSS 4 和 SVG 实现图表效果。
+```
+
+**AI 返回要点**：
+- 后端返回了完成率和标签统计数据
+- 前端添加了进度条和环形图
+- 添加了标签统计展示
+
+---
+
+## Prompt 14：响应式布局与移动端适配
+
+**时间**：2026-07-16  
+**对应文件**：`frontend/src/components/layout/Sidebar.tsx`
+
+**目标**：实现响应式布局，适配移动端
+
+**Prompt**：
+```
+请帮我实现响应式布局：
+
+1. Sidebar 组件添加移动端汉堡菜单按钮
+2. 移动端点击菜单按钮弹出侧边导航
+3. 添加遮罩层，点击遮罩关闭菜单
+4. 确保所有页面在移动端正常显示
+
+使用 Tailwind CSS 4 的响应式断点（sm, md, lg）实现。
+```
+
+**AI 返回要点**：
+- 添加了移动端汉堡菜单
+- 实现了侧边栏弹出效果
+- 添加了遮罩层
+
+---
+
+## Prompt 15：统一操作反馈组件
+
+**时间**：2026-07-16  
+**对应文件**：`frontend/src/components/ui/Toast.tsx`、`frontend/src/components/ui/ConfirmDialog.tsx`、`frontend/src/app/layout.tsx`
+
+**目标**：创建统一的操作反馈组件
+
+**Prompt**：
+```
+请帮我创建统一的操作反馈组件：
+
+1. Toast 组件：
+   - 支持成功、错误、警告、信息四种类型
+   - 自动消失（3秒）
+   - 支持手动关闭
+   - 使用 Context Provider 模式全局管理
+
+2. ConfirmDialog 组件：
+   - 确认弹窗，支持自定义标题和内容
+   - 取消和确认按钮
+   - 返回 Promise
+
+3. 在 layout.tsx 中引入 ToastProvider
+
+4. 在笔记和待办页面中使用 Toast 和 ConfirmDialog
+```
+
+**AI 返回要点**：
+- 创建了 ToastProvider 和 useToast hook
+- 创建了 ConfirmDialog 组件
+- 在所有页面中集成了操作反馈
+
+---
+
+## Prompt 16：跨域问题修复与 API 代理配置
+
+**时间**：2026-07-16  
+**对应文件**：`frontend/next.config.ts`、`frontend/src/lib/api.ts`
+
+**目标**：修复前后端跨域问题
+
+**Prompt**：
+```
+前端调用后端 API 出现跨域错误，请帮我配置 Next.js 代理：
+
+1. 在 next.config.ts 中配置 rewrites，将 /api/* 请求转发到 http://localhost:5000/api/*
+2. 修改 api.ts 中的 baseURL，使用相对路径
+
+确保前端可以正常调用后端 API。
+```
+
+**AI 返回要点**：
+- 配置了 Next.js rewrites 代理
+- 修改了 baseURL 使用相对路径
+- 跨域问题解决
+
+---
+
 ## 总结
 
 | Prompt | 日期 | 对应文件 | 完成状态 |
@@ -322,3 +501,9 @@
 | CI/CD | 2026-07-15 | .github/workflows/ci.yml | ✅ |
 | UI 美化 | 2026-07-15 | components/ | ✅ |
 | 部署文档 | 2026-07-15 | README.md, vercel.json | ✅ |
+| 笔记搜索与分页 | 2026-07-16 | notes.py, notes/page.tsx | ✅ |
+| 待办拖拽排序 | 2026-07-16 | todo.py, todos.py, todos/page.tsx | ✅ |
+| 仪表盘可视化 | 2026-07-16 | stats.py, dashboard/page.tsx | ✅ |
+| 响应式布局 | 2026-07-16 | Sidebar.tsx | ✅ |
+| 操作反馈组件 | 2026-07-16 | Toast.tsx, ConfirmDialog.tsx | ✅ |
+| API 代理配置 | 2026-07-16 | next.config.ts, api.ts | ✅ |

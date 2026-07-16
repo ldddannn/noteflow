@@ -147,26 +147,41 @@
 
 ## 2. 笔记模块 `/api/notes`
 
-### GET `/api/notes` — 笔记列表
+### GET `/api/notes` — 笔记列表（支持搜索、筛选、分页）
 
 **请求头**：`Authorization: Bearer <token>`
+
+**查询参数**：
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+|------|------|------|--------|------|
+| keyword | string | 否 | - | 关键词搜索（标题或内容） |
+| tag | string | 否 | - | 标签筛选 |
+| page | integer | 否 | 1 | 页码 |
+| size | integer | 否 | 10 | 每页数量 |
 
 **成功响应 (200)**：
 ```json
 {
   "code": 200,
   "message": "success",
-  "data": [
-    {
-      "id": 1,
-      "title": "笔记标题",
-      "content": "内容...",
-      "tag": "工作",
-      "user_id": 1,
-      "created_at": "2026-07-15T00:00:00+00:00",
-      "updated_at": "2026-07-15T00:00:00+00:00"
-    }
-  ]
+  "data": {
+    "items": [
+      {
+        "id": 1,
+        "title": "笔记标题",
+        "content": "内容...",
+        "tag": "工作",
+        "user_id": 1,
+        "created_at": "2026-07-15T00:00:00+00:00",
+        "updated_at": "2026-07-15T00:00:00+00:00"
+      }
+    ],
+    "total": 50,
+    "page": 1,
+    "size": 10,
+    "pages": 5
+  }
 }
 ```
 
@@ -282,6 +297,30 @@
 
 ---
 
+### POST `/api/todos/reorder` — 批量重排序
+
+**请求头**：`Authorization: Bearer <token>`
+
+**请求体**：
+```json
+{
+  "order": [3, 1, 2, 5, 4]
+}
+```
+
+**说明**：传入排序后的 todo_id 数组，系统会根据数组顺序更新每个待办的 order 字段。
+
+**成功响应 (200)**：
+```json
+{
+  "code": 200,
+  "message": "排序更新成功",
+  "data": null
+}
+```
+
+---
+
 ## 4. 统计模块 `/api/stats`
 
 ### GET `/api/stats/dashboard` — 仪表盘统计
@@ -296,10 +335,26 @@
   "data": {
     "note_count": 5,
     "todo_count": 10,
-    "done_count": 3
+    "done_count": 3,
+    "completion_rate": 30,
+    "tag_stats": [
+      {"tag": "工作", "count": 2},
+      {"tag": "学习", "count": 2},
+      {"tag": "生活", "count": 1}
+    ]
   }
 }
 ```
+
+**字段说明**：
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| note_count | integer | 笔记总数 |
+| todo_count | integer | 待办总数 |
+| done_count | integer | 已完成待办数 |
+| completion_rate | integer | 待办完成率（0-100） |
+| tag_stats | array | 标签统计数组 |
 
 ---
 

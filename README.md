@@ -10,9 +10,13 @@ NoteFlow 是一个个人笔记与待办管理系统，支持：
 
 - 用户注册 / 登录（JWT 鉴权）
 - 笔记增删改查（标题、内容、标签）
+- **笔记搜索与分页**（支持关键词搜索和标签筛选）
 - 待办事项管理（状态切换、过滤、双击编辑）
-- 仪表盘统计（笔记数、待办数、最近笔记）
+- **待办拖拽排序**（HTML5 Drag API，自动保存排序）
+- **仪表盘统计**（笔记数、待办数、完成进度、标签统计）
 - 个人中心（修改用户名、头像、密码）
+- **响应式布局**（适配桌面端和移动端）
+- **统一操作反馈**（Toast 提示、Confirm 确认弹窗）
 
 ---
 
@@ -85,11 +89,17 @@ python -m pytest backend/tests/ -v   # 42 个测试
 
 | 方法 | 路径 | 鉴权 | 说明 |
 |------|------|------|------|
-| GET | `/api/notes` | JWT | 笔记列表 |
+| GET | `/api/notes?keyword=&tag=&page=&size=` | JWT | 笔记列表（支持搜索、筛选、分页） |
 | POST | `/api/notes` | JWT | 创建笔记 |
 | GET | `/api/notes/<id>` | JWT | 笔记详情 |
 | PUT | `/api/notes/<id>` | JWT | 更新笔记 |
 | DELETE | `/api/notes/<id>` | JWT | 删除笔记 |
+
+**查询参数**：
+- `keyword` - 关键词搜索（标题或内容）
+- `tag` - 标签筛选
+- `page` - 页码（默认 1）
+- `size` - 每页数量（默认 10）
 
 ### 待办模块 `/api/todos`
 
@@ -100,12 +110,13 @@ python -m pytest backend/tests/ -v   # 42 个测试
 | GET | `/api/todos/<id>` | JWT | 待办详情 |
 | PUT | `/api/todos/<id>` | JWT | 更新待办（标题/状态） |
 | DELETE | `/api/todos/<id>` | JWT | 删除待办 |
+| POST | `/api/todos/reorder` | JWT | 批量重排序 |
 
 ### 统计模块 `/api/stats`
 
 | 方法 | 路径 | 鉴权 | 说明 |
 |------|------|------|------|
-| GET | `/api/stats/dashboard` | JWT | 笔记总数/待办总数/已完成数 |
+| GET | `/api/stats/dashboard` | JWT | 笔记总数/待办总数/已完成数/完成率/标签统计 |
 
 ### 统一响应格式
 
