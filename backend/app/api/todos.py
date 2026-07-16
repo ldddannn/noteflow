@@ -15,14 +15,23 @@ todos_bp = Blueprint("todos", __name__)
 def list_todos():
     """获取当前用户的待办列表，支持 ?status=pending|done 过滤"""
     user_id = int(get_jwt_identity())
+    page = int(request.args.get("page", 1))
+    size = int(request.args.get("size", 10))
     query = Todo.query.filter_by(user_id=user_id)
 
     status = request.args.get("status")
     if status in ("pending", "done"):
         query = query.filter_by(status=status)
 
-    todos = query.order_by(Todo.order.asc(), Todo.created_at.desc()).all()
-    return success(data=[t.to_dict() for t in todos])
+    total = query.count()
+    todos = query.order_by(Todo.order.asc(), Todo.created_at.desc()).offset((page - 1) * size).limit(size).all()
+    return success(data={
+        "items": [t.to_dict() for t in todos],
+        "total": total,
+        "page": page,
+        "size": size,
+        "pages": (total + size - 1) // size if total > 0 else 0
+    })
 
 
 @todos_bp.route("", methods=["POST"])

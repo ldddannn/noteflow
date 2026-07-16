@@ -24,5 +24,5 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - run: npm ci --prefix frontend --include=dev
-      - run: npx tsc --noEmit --project frontend/tsconfig.json
+      - run: npm install --prefix frontend
+      - run: npm run build --prefix frontend
