@@ -1,7 +1,0 @@
-name = "noteflow"
-
-[build]
-command = "npm run build"
-cwd = "."
-publish = ".next"
-pages_build_output_dir = ".next"
