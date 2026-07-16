@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import Sidebar from "@/components/layout/Sidebar";
 import { TodoRowSkeleton } from "@/components/ui/Skeleton";
-import { ToastContainer, useToast } from "@/components/ui/Toast";
+import { useToast } from "@/components/ui/Toast";
 import ConfirmDialog from "@/components/ui/ConfirmDialog";
 import api from "@/lib/api";
 import type { Todo } from "@/types/todo";
@@ -381,7 +381,6 @@ export default function TodosPage() {
         )}
       </div>
 
-      <ToastContainer toasts={toasts} removeToast={removeToast} />
       <ConfirmDialog
         isOpen={confirmDialog.isOpen}
         title="确认删除"

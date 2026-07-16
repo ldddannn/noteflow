@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import Sidebar from "@/components/layout/Sidebar";
 import { NoteCardSkeleton } from "@/components/ui/Skeleton";
-import { ToastContainer, useToast } from "@/components/ui/Toast";
+import { useToast } from "@/components/ui/Toast";
 import ConfirmDialog from "@/components/ui/ConfirmDialog";
 import api from "@/lib/api";
 import type { Note } from "@/types/note";
@@ -208,7 +208,6 @@ export default function NotesPage() {
         </main>
       </div>
 
-      <ToastContainer toasts={toasts} removeToast={removeToast} />
       <ConfirmDialog
         isOpen={confirmDialog.isOpen}
         title="确认删除"

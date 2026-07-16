@@ -1,5 +1,6 @@
 from flask import Blueprint
 from flask_jwt_extended import jwt_required, get_jwt_identity
+from sqlalchemy import func
 
 from app.models import Note, Todo
 from app.utils.response import success
@@ -19,7 +20,7 @@ def dashboard():
 
     tag_stats = (
         Note.query.filter_by(user_id=user_id)
-        .with_entities(Note.tag, Note.tag.count())
+        .with_entities(Note.tag, func.count(Note.tag))
         .group_by(Note.tag)
         .all()
     )

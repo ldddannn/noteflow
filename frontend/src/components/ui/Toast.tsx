@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 
 interface ToastProps {
   message: string;
@@ -63,33 +63,28 @@ export function Toast({ message, type = "info", onClose }: ToastProps) {
   );
 }
 
-interface ToastContainerProps {
-  toasts: Array<{ id: string; message: string; type?: "success" | "error" | "info" }>;
+interface ToastItem {
+  id: string;
+  message: string;
+  type?: "success" | "error" | "info";
+}
+
+interface ToastContextType {
+  toasts: ToastItem[];
+  addToast: (message: string, type?: "success" | "error" | "info") => void;
   removeToast: (id: string) => void;
+  success: (message: string) => void;
+  error: (message: string) => void;
+  info: (message: string) => void;
 }
 
-export function ToastContainer({ toasts, removeToast }: ToastContainerProps) {
-  return (
-    <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2">
-      {toasts.map((toast) => (
-        <Toast
-          key={toast.id}
-          message={toast.message}
-          type={toast.type}
-          onClose={() => removeToast(toast.id)}
-        />
-      ))}
-    </div>
-  );
-}
+const ToastContext = createContext<ToastContextType | undefined>(undefined);
 
-let toastId = 0;
-
-export function useToast() {
-  const [toasts, setToasts] = useState<Array<{ id: string; message: string; type?: "success" | "error" | "info" }>>([]);
+export function ToastProvider({ children }: { children: ReactNode }) {
+  const [toasts, setToasts] = useState<ToastItem[]>([]);
 
   const addToast = (message: string, type?: "success" | "error" | "info") => {
-    const id = `toast-${++toastId}`;
+    const id = `toast-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     setToasts((prev) => [...prev, { id, message, type }]);
   };
 
@@ -101,5 +96,31 @@ export function useToast() {
   const error = (message: string) => addToast(message, "error");
   const info = (message: string) => addToast(message, "info");
 
-  return { toasts, addToast, removeToast, success, error, info };
+  return (
+    <ToastContext.Provider value={{ toasts, addToast, removeToast, success, error, info }}>
+      {children}
+      <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2">
+        {toasts.map((toast) => (
+          <Toast
+            key={toast.id}
+            message={toast.message}
+            type={toast.type}
+            onClose={() => removeToast(toast.id)}
+          />
+        ))}
+      </div>
+    </ToastContext.Provider>
+  );
+}
+
+export function useToast() {
+  const context = useContext(ToastContext);
+  if (!context) {
+    throw new Error("useToast must be used within a ToastProvider");
+  }
+  return context;
+}
+
+export function ToastContainer() {
+  throw new Error("ToastContainer has been replaced with ToastProvider");
 }

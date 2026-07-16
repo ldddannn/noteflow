@@ -1,5 +1,6 @@
 import os
 from flask import Flask
+from flask_jwt_extended import JWTManager
 from .config import config_map
 from .extensions import db, migrate, jwt, cors
 from .utils.errors import register_error_handlers
@@ -19,6 +20,23 @@ def create_app(config_name=None):
     migrate.init_app(app, db)
     jwt.init_app(app)
     cors.init_app(app)
+
+    # JWT 错误处理
+    @jwt.expired_token_loader
+    def expired_token_callback(jwt_header, jwt_payload):
+        return {"code": 401, "message": "token已过期"}, 401
+
+    @jwt.invalid_token_loader
+    def invalid_token_callback(error):
+        return {"code": 401, "message": "token无效"}, 401
+
+    @jwt.unauthorized_loader
+    def unauthorized_callback(error):
+        return {"code": 401, "message": "缺少token"}, 401
+
+    @jwt.revoked_token_loader
+    def revoked_token_callback(jwt_header, jwt_payload):
+        return {"code": 401, "message": "token已被撤销"}, 401
 
     # 注册蓝图
     from .api import register_blueprints
