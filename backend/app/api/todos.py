@@ -21,7 +21,7 @@ def list_todos():
     if status in ("pending", "done"):
         query = query.filter_by(status=status)
 
-    todos = query.order_by(Todo.created_at.desc()).all()
+    todos = query.order_by(Todo.order.asc(), Todo.created_at.desc()).all()
     return success(data=[t.to_dict() for t in todos])
 
 
@@ -36,7 +36,8 @@ def create_todo():
     except ValidationError as e:
         return error(format_validation_errors(e.messages), 400)
 
-    todo = Todo(title=data["title"], user_id=user_id)
+    max_order = Todo.query.filter_by(user_id=user_id).with_entities(db.func.max(Todo.order)).scalar() or 0
+    todo = Todo(title=data["title"], user_id=user_id, order=max_order + 1)
     db.session.add(todo)
     db.session.commit()
 
@@ -61,7 +62,7 @@ def get_todo(todo_id):
 @todos_bp.route("/<int:todo_id>", methods=["PUT"])
 @jwt_required()
 def update_todo(todo_id):
-    """更新待办（标题/状态）"""
+    """更新待办（标题/状态/排序）"""
     user_id = int(get_jwt_identity())
     todo = db.session.get(Todo, todo_id)
 
@@ -79,9 +80,33 @@ def update_todo(todo_id):
         todo.title = data["title"]
     if "status" in data:
         todo.status = data["status"]
+    if "order" in data:
+        todo.order = data["order"]
 
     db.session.commit()
     return success(data=todo.to_dict(), message="更新成功")
+
+
+@todos_bp.route("/reorder", methods=["POST"])
+@jwt_required()
+def reorder_todos():
+    """批量更新待办排序"""
+    user_id = int(get_jwt_identity())
+    data = request.get_json()
+
+    if not data or "order" not in data:
+        return error("缺少排序数据", 400)
+
+    try:
+        for idx, todo_id in enumerate(data["order"]):
+            todo = db.session.get(Todo, todo_id)
+            if todo and todo.user_id == user_id:
+                todo.order = idx + 1
+        db.session.commit()
+        return success(message="排序更新成功")
+    except Exception as e:
+        db.session.rollback()
+        return error("排序更新失败", 500)
 
 
 @todos_bp.route("/<int:todo_id>", methods=["DELETE"])
