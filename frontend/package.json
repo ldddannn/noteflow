@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "build-cf": "next build && npx @cloudflare/next-on-pages"
+    "build-cf": "next build"
   },
   "dependencies": {
     "@cloudflare/next": "^1.2.4",

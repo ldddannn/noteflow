@@ -1,8 +1,10 @@
 name = "noteflow-frontend"
-main = ".next/serverless/pages"
-compatibility_date = "2024-07-01"
+compatibility_date = "2025-07-01"
 
 [build]
 command = "npm run build"
 cwd = "."
 publish = ".next"
+
+[pages]
+build_output_dir = ".next"
