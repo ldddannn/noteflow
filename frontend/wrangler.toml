@@ -1,12 +1,7 @@
 name = "noteflow"
-type = "pages"
-account_id = ""
-workers_dev = false
 
 [build]
 command = "npm run build"
 cwd = "."
 publish = ".next"
-
-[pages]
-build_output_dir = ".next"
+pages_build_output_dir = ".next"
