@@ -1,0 +1,9 @@
+[build]
+builder = "python"
+rootDir = "backend"
+
+[deploy]
+startCommand = "gunicorn wsgi:app"
+
+[env]
+FLASK_ENV = "production"

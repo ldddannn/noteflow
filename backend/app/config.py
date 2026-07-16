@@ -19,6 +19,11 @@ class ProductionConfig(Config):
     """生产环境"""
     DEBUG = False
     SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL")
+    SQLALCHEMY_ENGINE_OPTIONS = {
+        "pool_recycle": 300,
+        "pool_pre_ping": True,
+        "connect_args": {"charset": "utf8mb4"}
+    }
 
 
 class TestingConfig(Config):

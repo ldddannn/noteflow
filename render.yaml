@@ -16,4 +16,15 @@ services:
       - key: JWT_SECRET_KEY
         generateValue: true
       - key: CORS_ORIGINS
-        value: https://noteflow-ldddannn.vercel.app
+        value: "*"
+
+  - type: web
+    name: noteflow-frontend
+    env: node
+    plan: starter
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    startCommand: npm run start
+    envVars:
+      - key: NEXT_PUBLIC_API_BASE_URL
+        value: https://noteflow-backend.onrender.com

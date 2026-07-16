@@ -6,4 +6,4 @@ flask-cors==6.0.5
 marshmallow==4.3.0
 python-dotenv==1.2.2
 gunicorn==26.0.0
-pytest==9.1.1
+pymysql==1.1.1

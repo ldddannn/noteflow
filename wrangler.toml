@@ -1,0 +1,14 @@
+name = "noteflow"
+type = "nextjs"
+account_id = ""
+workers_dev = true
+
+[build]
+command = "cd frontend && npm install && npm run build && npx @cloudflare/next-on-pages@1.13.16"
+
+[vars]
+NEXT_PUBLIC_API_BASE_URL = "https://noteflow-backend.onrender.com"
+
+[[pages_functions]]
+source = "api/*"
+binding = { type = "http", origin = "https://noteflow-backend.onrender.com" }
