@@ -5,7 +5,7 @@
   "routeRules": {
     "/api/*": {
       "origin": {
-        "url": "https://your-railway-backend-url.up.railway.app"
+        "url": "https://noteflow-backend-production-100f.up.railway.app"
       }
     }
   }

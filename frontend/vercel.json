@@ -5,7 +5,7 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "https://noteflow-backend-ldddannn.onrender.com/api/$1"
+      "destination": "https://noteflow-backend-production-100f.up.railway.app/api/$1"
     }
   ]
 }
