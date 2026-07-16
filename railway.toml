@@ -1,7 +1,3 @@
-[build]
-builder = "python"
-rootDir = "backend"
-
 [deploy]
 startCommand = "gunicorn wsgi:app"
 
