@@ -63,7 +63,7 @@ class TestListNotes:
         token = _login(client)
         res = client.get("/api/notes", headers=_auth_header(token))
         assert res.status_code == 200
-        assert res.get_json()["data"] == []
+        assert res.get_json()["data"]["items"] == []
 
     def test_list_multiple(self, client):
         """多笔记列表"""
@@ -73,7 +73,7 @@ class TestListNotes:
 
         res = client.get("/api/notes", headers=_auth_header(token))
         assert res.status_code == 200
-        assert len(res.get_json()["data"]) == 2
+        assert len(res.get_json()["data"]["items"]) == 2
 
     def test_list_isolated(self, client):
         """用户隔离：只能看到自己的笔记"""
@@ -83,8 +83,8 @@ class TestListNotes:
         client.post("/api/notes", json={"title": "U2", "content": "x"}, headers=_auth_header(token2))
 
         res = client.get("/api/notes", headers=_auth_header(token1))
-        assert len(res.get_json()["data"]) == 1
-        assert res.get_json()["data"][0]["title"] == "U1"
+        assert len(res.get_json()["data"]["items"]) == 1
+        assert res.get_json()["data"]["items"][0]["title"] == "U1"
 
 
 class TestGetNote:

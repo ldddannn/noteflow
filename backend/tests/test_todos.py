@@ -48,7 +48,7 @@ class TestListTodos:
         token = _login(client)
         res = client.get("/api/todos", headers=_auth_header(token))
         assert res.status_code == 200
-        assert res.get_json()["data"] == []
+        assert res.get_json()["data"]["items"] == []
 
     def test_list_filter(self, client):
         """按状态过滤"""
@@ -61,13 +61,13 @@ class TestListTodos:
 
         # 过滤 pending
         res = client.get("/api/todos?status=pending", headers=_auth_header(token))
-        assert len(res.get_json()["data"]) == 1
-        assert res.get_json()["data"][0]["title"] == "B"
+        assert len(res.get_json()["data"]["items"]) == 1
+        assert res.get_json()["data"]["items"][0]["title"] == "B"
 
         # 过滤 done
         res = client.get("/api/todos?status=done", headers=_auth_header(token))
-        assert len(res.get_json()["data"]) == 1
-        assert res.get_json()["data"][0]["title"] == "A"
+        assert len(res.get_json()["data"]["items"]) == 1
+        assert res.get_json()["data"]["items"][0]["title"] == "A"
 
     def test_list_isolated(self, client):
         """用户隔离"""
@@ -77,8 +77,8 @@ class TestListTodos:
         client.post("/api/todos", json={"title": "U2"}, headers=_auth_header(token2))
 
         res = client.get("/api/todos", headers=_auth_header(token1))
-        assert len(res.get_json()["data"]) == 1
-        assert res.get_json()["data"][0]["title"] == "U1"
+        assert len(res.get_json()["data"]["items"]) == 1
+        assert res.get_json()["data"]["items"][0]["title"] == "U1"
 
 
 class TestGetTodo:
