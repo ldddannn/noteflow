@@ -1,5 +1,7 @@
-name = "noteflow-frontend"
-compatibility_date = "2025-07-01"
+name = "noteflow"
+type = "pages"
+account_id = ""
+workers_dev = false
 
 [build]
 command = "npm run build"
