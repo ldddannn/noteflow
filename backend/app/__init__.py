@@ -19,7 +19,8 @@ def create_app(config_name=None):
     db.init_app(app)
     migrate.init_app(app, db)
     jwt.init_app(app)
-    cors.init_app(app)
+    cors_origins = os.getenv("CORS_ORIGINS", "*")
+    cors.init_app(app, resources={r"/api/*": {"origins": cors_origins.split(",")}})
 
     # JWT 错误处理
     @jwt.expired_token_loader

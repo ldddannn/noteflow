@@ -16,4 +16,4 @@ services:
       - key: JWT_SECRET_KEY
         generateValue: true
       - key: CORS_ORIGINS
-        value: https://noteflow-liudan.vercel.app
+        value: https://noteflow-ldddannn.vercel.app
