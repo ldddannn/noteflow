@@ -1,5 +1,4 @@
 import type { NextConfig } from "next";
-import { withCloudflarePages } from "@cloudflare/next";
 
 const nextConfig: NextConfig = {
   devIndicators: false,
@@ -19,4 +18,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default withCloudflarePages(nextConfig);
+export default nextConfig;
