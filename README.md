@@ -32,7 +32,7 @@ NoteFlow 是一个个人笔记与待办管理系统，支持：
 ```bash
 git clone https://gitee.com/liu-danD/noteflow.git
 cd noteflow
-
+```
 ### 2. 启动后端
 
 ```bash
@@ -60,49 +60,56 @@ python -m pytest backend/tests/ -v   # 42 个测试
 
 ---
 
-腾讯云 Debian 服务器部署流程
+# 腾讯云 Debian 服务器部署流程
+
 服务器信息：系统 Debian，公网 IP：124.221.220.227
-1. 服务器初始化依赖
+
+### 1. 服务器初始化依赖
+```bash
 apt update && apt upgrade -y
 apt install python3 python3-pip python3-venv git nginx postgresql postgresql-contrib nodejs npm -y
-
-# 可选：安装 Miniconda 对齐本地开发环境
-
+```
+### 可选：安装 Miniconda 对齐本地开发环境
+```bash
 wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
 bash Miniconda3-latest-Linux-x86_64.sh
 source ~/.bashrc
 conda create -n noteflow python=3.11 -y
 conda activate noteflow
-
-2. 拉取项目代码
+```
+### 2. 拉取项目代码
+```bash
 git clone https://github.com/ldddannn/noteflow.git
 cd noteflow
-
-3. 后端 Flask 生产部署
+```
+### 3. 后端 Flask 生产部署
+```bash
 conda activate noteflow
 cd backend
 pip install -r requirements.txt
 pip install gunicorn
-
-# 新建环境变量配置文件
-vim .env
+```
+### 新建环境变量配置文
+```bash
 .env 内容：
-env
 SECRET_KEY=自定义随机高强度密钥
 JWT_SECRET_KEY=自定义随机高强度密钥
 DATABASE_URI=postgresql://postgres:你的数据库密码@127.0.0.1:5432/noteflow
 FLASK_ENV=production
 后台启动后端服务：
 nohup gunicorn -w 4 -b 127.0.0.1:5000 run:app > backend.log 2>&1 &
-
-4. 前端 Next.js 打包启动
+```
+### 4. 前端 Next.js 打包启动
+```bash
 cd ../frontend
 npm install
 npm run build
 nohup npm start > frontend.log 2>&1 &
-
-5. Nginx 反向代理配置（对外暴露公网 IP）
+```
+### 5. Nginx 反向代理配置（对外暴露公网 IP）
+```bash
 创建站点配置
+
 vim /etc/nginx/sites-available/noteflow
 nginx
 server {
@@ -124,11 +131,13 @@ server {
     }
 }
 启用并重启 Nginx
+
 ln -s /etc/nginx/sites-available/noteflow /etc/nginx/sites-enabled/
 nginx -t
 systemctl restart nginx
-部署完成访问地址：http://124.221.220.227
 
+部署完成访问地址：http://124.221.220.227
+```
 ## API 文档
 
 ### 认证模块 `/api/auth`
@@ -187,6 +196,7 @@ systemctl restart nginx
 ---
 
 ## 项目结构
+```bash
 noteflow/
 ├── .github/
 │   └── workflows/          # CI自动化工作流配置
@@ -220,6 +230,7 @@ noteflow/
 ├── README.md               # 项目说明文档
 ├── 个人总结报告.md         # 实训个人总结
 └── 项目演示录屏.mp4        # 系统操作演示视频
+```
 ---
 
 ## 前端路由
@@ -250,18 +261,26 @@ noteflow/
 
 ---
 
-注意事项
-腾讯云服务器安全组必须放行 80（网页）、5432（PostgreSQL） 端口，否则公网无法访问服务和数据库；
-本地开发使用 SQLite，腾讯云生产环境使用 PostgreSQL，需提前登录数据库创建 noteflow 库；
-生产环境务必修改 .env 内 SECRET_KEY 和 JWT_SECRET_KEY，使用随机高强度密钥，禁止明文泄露；
-当前使用 nohup 后台常驻进程，服务器重启后需重新执行前后端启动命令；如需开机自启，可配置 systemd 服务托管；
-项目公网访问地址：http://124.221.220.227
+# 注意事项
+```bash
+1.腾讯云服务器安全组必须放行 80（网页）、5432（PostgreSQL） 端口，否则公网无法访问服务和数据库；
+2.本地开发使用 SQLite，腾讯云生产环境使用 PostgreSQL，需提前登录数据库创建 noteflow 库；
+3.生产环境务必修改 .env 内 SECRET_KEY 和 JWT_SECRET_KEY，使用随机高强度密钥，禁止明文泄露；
+4.当前使用 nohup 后台常驻进程，服务器重启后需重新执行前后端启动命令；如需开机自启，可配置 systemd 服务托管；
+5.项目公网访问地址：http://124.221.220.227
+```
 
-## 补充额外优化建议（可选加进文档）
-1. **数据库初始化**：补充 PostgreSQL 创建库命令
+## 补充额外优化建议
+
+### 1. 补充 PostgreSQL 创建库命令：
+```bash
 sudo -u postgres psql
 CREATE DATABASE noteflow;
 \q
-进程托管优化：使用 systemd 替代 nohup，实现开机自启、崩溃自动重启
-HTTPS 可选：在 Nginx 配置 SSL 证书，实现 https://124.221.220.227 安全访问
-前端接口地址修改：前端 lib/axios.ts 开发环境为 http://localhost:5000/api，服务器环境改为 /api（Nginx 统一转发，无需写公网 IP）
+```
+### 2.进程托管优化：
+使用 systemd 替代 nohup，实现开机自启、崩溃自动重启
+### 3.HTTPS 可选：
+在 Nginx 配置 SSL 证书，实现 https://124.221.220.227 安全访问
+### 4.前端接口地址修改：
+前端 lib/axios.ts 开发环境为 http://localhost:5000/api，服务器环境改为 /api（Nginx 统一转发，无需写公网 IP）
