@@ -65,20 +65,25 @@ python -m pytest backend/tests/ -v   # 42 个测试
 1. 服务器初始化依赖
 apt update && apt upgrade -y
 apt install python3 python3-pip python3-venv git nginx postgresql postgresql-contrib nodejs npm -y
+
 # 可选：安装 Miniconda 对齐本地开发环境
+
 wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
 bash Miniconda3-latest-Linux-x86_64.sh
 source ~/.bashrc
 conda create -n noteflow python=3.11 -y
 conda activate noteflow
+
 2. 拉取项目代码
 git clone https://github.com/ldddannn/noteflow.git
 cd noteflow
+
 3. 后端 Flask 生产部署
 conda activate noteflow
 cd backend
 pip install -r requirements.txt
 pip install gunicorn
+
 # 新建环境变量配置文件
 vim .env
 .env 内容：
@@ -88,14 +93,14 @@ JWT_SECRET_KEY=自定义随机高强度密钥
 DATABASE_URI=postgresql://postgres:你的数据库密码@127.0.0.1:5432/noteflow
 FLASK_ENV=production
 后台启动后端服务：
-bash
-运行
 nohup gunicorn -w 4 -b 127.0.0.1:5000 run:app > backend.log 2>&1 &
+
 4. 前端 Next.js 打包启动
 cd ../frontend
 npm install
 npm run build
 nohup npm start > frontend.log 2>&1 &
+
 5. Nginx 反向代理配置（对外暴露公网 IP）
 创建站点配置
 vim /etc/nginx/sites-available/noteflow
@@ -119,8 +124,6 @@ server {
     }
 }
 启用并重启 Nginx
-bash
-运行
 ln -s /etc/nginx/sites-available/noteflow /etc/nginx/sites-enabled/
 nginx -t
 systemctl restart nginx
@@ -184,7 +187,6 @@ systemctl restart nginx
 ---
 
 ## 项目结构
-
 noteflow/
 ├── .github/
 │   └── workflows/          # CI自动化工作流配置
