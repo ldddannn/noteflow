@@ -185,8 +185,9 @@ systemctl restart nginx
 
 ## 项目结构
 
-```
 noteflow/
+├── .github/
+│   └── workflows/          # CI自动化工作流配置
 ├── backend/
 │   ├── app/
 │   │   ├── api/           # 蓝图路由
@@ -195,21 +196,28 @@ noteflow/
 │   │   │   ├── todos.py   # /api/todos/*
 │   │   │   └── stats.py   # /api/stats/*
 │   │   ├── models/        # 数据库模型
-│   │   ├── schemas/       # Marshmallow 校验
-│   │   └── utils/         # 工具函数
-│   ├── tests/             # PyTest（42 用例）
-│   └── requirements.txt
+│   │   ├── schemas/       # Marshmallow 参数校验
+│   │   └── utils/         # 通用工具函数
+│   ├── tests/             # PyTest 测试用例（共42个）
+│   └── requirements.txt   # Python依赖清单
 ├── frontend/
 │   └── src/
-│       ├── app/           # App Router 页面（7 路由）
-│       ├── components/    # 可复用组件
-│       ├── lib/           # Axios 封装 & 工具
-│       ├── hooks/         # 自定义 Hooks
-│       └── types/         # TypeScript 类型
-└── docs/
-    └── code-review-report.md
-```
-
+│       ├── app/           # Next.js App Router 页面（7个路由）
+│       ├── components/    # 全局复用组件
+│       ├── lib/           # Axios请求封装、工具函数
+│       ├── hooks/         # 自定义React Hooks
+│       └── types/         # TypeScript 类型定义
+├── docs/                   # 项目文档目录
+│    └── README.md
+│    └── api.md
+│    └── code-review-report.md
+│    └── database-report.md
+├── screenshot/             # 系统截图素材
+├── .gitignore              # Git忽略文件配置
+├── prompt_log.md           # 开发提示日志
+├── README.md               # 项目说明文档
+├── 个人总结报告.md         # 实训个人总结
+└── 项目演示录屏.mp4        # 系统操作演示视频
 ---
 
 ## 前端路由
